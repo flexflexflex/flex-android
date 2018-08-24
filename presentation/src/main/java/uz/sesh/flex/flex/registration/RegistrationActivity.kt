@@ -6,13 +6,21 @@ import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import io.reactivex.Observer
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_registration.*
 import kotlinx.android.synthetic.main.content_registration.*
+import uz.sesh.flex.data.datasource.repository.AuthRepositoryImpl
+import uz.sesh.flex.data.datasource.repositoryProviders.AuthRepositoryProvider
+import uz.sesh.flex.domain.repository.AuthRepository
 import uz.sesh.flex.flex.R
 
-class RegistrationActivity : AppCompatActivity(), View.OnClickListener{
+class RegistrationActivity : AppCompatActivity(), View.OnClickListener {
+    val authRepository: AuthRepository = AuthRepositoryProvider().provideAuthRepository()
     override fun onClick(v: View?) {
-        when(v?.id){
+        when (v?.id) {
 
         }
     }
@@ -28,7 +36,7 @@ class RegistrationActivity : AppCompatActivity(), View.OnClickListener{
         setSupportActionBar(toolbar)
         fab.hide()
         phoneInputLayout.requestFocus()
-        phoneInputLayout.editText?.addTextChangedListener(object :TextWatcher{
+        phoneInputLayout.editText?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
 
             }
@@ -46,9 +54,15 @@ class RegistrationActivity : AppCompatActivity(), View.OnClickListener{
 
         })
         fab.setOnClickListener { view ->
-            //            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                    .setAction("Action", null).show()
-            startActivity(Intent(this, SmsConfirmationActivity::class.java))
+            authRepository.signByPhoneNumber(phoneNumber = phoneInputLayout.editText?.text.toString())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe({ result ->
+                        startActivity(Intent(this, SmsConfirmationActivity::class.java))
+                    }, { error ->
+                        error.printStackTrace()
+
+                    })
         }
     }
 }
