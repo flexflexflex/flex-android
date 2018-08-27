@@ -2,20 +2,26 @@ package uz.sesh.flex.flex.registration
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.MenuItem
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_sms_confirmation.*
 import kotlinx.android.synthetic.main.content_sms_confirmation.*
+import uz.sesh.flex.data.datasource.repositoryProviders.AuthRepositoryProvider
+import uz.sesh.flex.domain.repository.AuthRepository
+import uz.sesh.flex.flex.BaseActivity
 import uz.sesh.flex.flex.R
+import uz.sesh.flex.flex.main.MainActivity
 
-class SmsConfirmationActivity : AppCompatActivity() {
-
+class SmsConfirmationActivity : BaseActivity() {
+    private var authRepository: AuthRepository ?=null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initUi()
+        authRepository = AuthRepositoryProvider().provideAuthRepository(context = this)
     }
 
     private fun initUi() {
@@ -24,9 +30,8 @@ class SmsConfirmationActivity : AppCompatActivity() {
 
         fab.hide()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+        fab.setOnClickListener {
+            confirmPhoneBySmsCode(intent.getStringExtra("phone"),textInputConfirmationCode.editText?.text.toString())
         }
         textInputConfirmationCode.editText?.apply {
             addTextChangedListener(object : TextWatcher {
@@ -50,6 +55,20 @@ class SmsConfirmationActivity : AppCompatActivity() {
             })
             requestFocus()
         }
+
+    }
+
+    private fun confirmPhoneBySmsCode(phone: String, code: String) {
+        authRepository?.confirmPhoneBySms(phone, code)
+                ?.observeOn(AndroidSchedulers.mainThread())
+                ?.subscribeOn(Schedulers.io())
+                ?.subscribe(
+                        { result ->
+                            openActivity(MainActivity::class.java)
+                        },
+                        { error ->
+                            error.printStackTrace()
+                        })
 
     }
 

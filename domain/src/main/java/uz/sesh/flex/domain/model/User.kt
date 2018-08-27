@@ -1,6 +1,7 @@
 package uz.sesh.flex.domain.model
 
-data class User(val name:String,
-                val username:String,
-                val phone:String,
-                val token:String)
+data class User(val firstName:String?,
+                val lastName: String?,
+                val username:String?,
+                val bio:String?,
+                val phone:String?)

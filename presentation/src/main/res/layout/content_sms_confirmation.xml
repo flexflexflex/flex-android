@@ -23,6 +23,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="numberDecimal"
+            android:textColor="@color/colorAccent"
             android:hint="Code" />
     </android.support.design.widget.TextInputLayout>
 </android.support.constraint.ConstraintLayout>

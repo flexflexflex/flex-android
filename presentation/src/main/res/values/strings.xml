@@ -5,4 +5,5 @@
     <string name="title_notifications">Notifications</string>
     <string name="title_activity_registration">Registration</string>
     <string name="title_activity_sms_confirmation">Confirmation</string>
+    <string name="phone_number">Phone number</string>
 </resources>

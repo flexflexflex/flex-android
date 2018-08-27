@@ -1,3 +1,7 @@
 package uz.sesh.flex.data.datasource.models.smsConfirmation
 
-data class SmsConfirmationResponse(val sesh: String)
+import com.google.gson.annotations.SerializedName
+
+data class SmsConfirmationResponse(
+        @SerializedName("token") val token: String
+)
