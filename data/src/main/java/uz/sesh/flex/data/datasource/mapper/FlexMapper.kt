@@ -1,6 +1,6 @@
 package uz.sesh.flex.data.datasource.mapper
 
-import uz.sesh.flex.data.datasource.models.FlexResponse
+import uz.sesh.flex.data.datasource.models.flex.FlexResponse
 import uz.sesh.flex.domain.model.Flex
 import uz.sesh.flex.domain.model.User
 

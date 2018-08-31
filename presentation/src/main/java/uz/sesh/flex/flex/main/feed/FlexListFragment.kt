@@ -3,23 +3,31 @@ package uz.sesh.flex.flex.main.feed
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.StaggeredGridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.fragment_flex_feed_item_list.*
+import uz.sesh.flex.data.datasource.repositoryProviders.FlexRepositoryProvider
+import uz.sesh.flex.domain.model.Flex
 import uz.sesh.flex.flex.R
-
-import uz.sesh.flex.flex.main.feed.dummy.DummyContent
-import uz.sesh.flex.flex.main.feed.dummy.DummyContent.DummyItem
 
 /**
  * A fragment representing a list of Items.
  * Activities containing this fragment MUST implement the
  * [FlexListFragment.OnListFragmentInteractionListener] interface.
  */
-class FlexListFragment : Fragment() {
+class FlexListFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
+    override fun onRefresh() {
+        (list.adapter as MyFlexFeedItemRecyclerViewAdapter).clearAll()
+        getFeed(0)
+    }
 
     // TODO: Customize parameters
     private var columnCount = 1
@@ -28,10 +36,26 @@ class FlexListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         arguments?.let {
             columnCount = it.getInt(ARG_COLUMN_COUNT)
         }
+    }
+
+    private fun getFeed(offser: Int) {
+        FlexRepositoryProvider().provideFlexRepository(context!!)
+                .getFeed(0)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .doOnSubscribe {
+                }
+                .doFinally {
+                    swipeRefreshlayout.isRefreshing = false
+                }
+                .subscribe({
+                    (list.adapter as MyFlexFeedItemRecyclerViewAdapter).addAll(it)
+                }, {
+
+                })
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -39,18 +63,27 @@ class FlexListFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_flex_feed_item_list, container, false)
 
         // Set the adapter
-        if (view is RecyclerView) {
-            with(view) {
-                layoutManager = when {
-                    columnCount <= 1 -> LinearLayoutManager(context)
-                    else -> GridLayoutManager(context, columnCount)
+        view.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshlayout).setOnRefreshListener(this)
+
+        with(view.findViewById<RecyclerView>(R.id.list)) {
+            layoutManager = when {
+                columnCount <= 1 -> LinearLayoutManager(context)
+                else -> {
+                    setHasFixedSize(false)
+                    StaggeredGridLayoutManager(columnCount,LinearLayoutManager.VERTICAL)
                 }
-                adapter = MyFlexFeedItemRecyclerViewAdapter(DummyContent.ITEMS, listener)
             }
+            adapter = MyFlexFeedItemRecyclerViewAdapter(listener)
         }
+
+
         return view
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        getFeed(0)
+    }
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is OnListFragmentInteractionListener) {
@@ -78,7 +111,7 @@ class FlexListFragment : Fragment() {
      */
     interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        fun onListFragmentInteraction(item: DummyItem?)
+        fun onListFragmentInteraction(item: Flex?)
     }
 
     companion object {

@@ -8,12 +8,12 @@ import uz.sesh.flex.flex.main.MainActivity
 import uz.sesh.flex.flex.registration.phone.RegistrationActivity
 
 class SplashActivity : BaseActivity() {
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         var authRepository: AuthRepository = AuthRepositoryProvider().provideAuthRepository(this)
-        if (authRepository.getUserToken() == ""){
+        if (authRepository.getUserToken() == "") {
             openActivity(RegistrationActivity::class.java)
-        }else{
+        } else {
             openActivity(MainActivity::class.java)
         }
     }

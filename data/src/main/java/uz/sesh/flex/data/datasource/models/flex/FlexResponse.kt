@@ -1,4 +1,4 @@
-package uz.sesh.flex.data.datasource.models
+package uz.sesh.flex.data.datasource.models.flex
 
 import com.google.gson.annotations.SerializedName
 import uz.sesh.flex.data.datasource.models.user.UserResponse

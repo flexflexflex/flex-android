@@ -6,6 +6,7 @@ import uz.sesh.flex.domain.repository.AuthRepository
 
 class AuthRepositoryProvider{
     fun provideAuthRepository(context: Context):AuthRepository{
+
         return AuthRepositoryImpl(context)
     }
 }

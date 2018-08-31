@@ -8,9 +8,9 @@ import uz.sesh.flex.domain.model.Flex
 import uz.sesh.flex.domain.model.User
 import uz.sesh.flex.domain.repository.FlexFeedRepository
 
-class FeedFlexRepositoryImpl(context: Context) : FlexFeedRepository {
+class FeedFlexRepositoryImpl(var context: Context) : FlexFeedRepository {
     override fun getFeed(page: Int): Single<ArrayList<Flex>> {
-        return FlexApi.create().getFeed(page).map {
+        return FlexApi.create(context).getFeed(page).map {
             return@map FlexMapper.map(it.flexes)
         }
     }
