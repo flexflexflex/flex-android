@@ -13,7 +13,6 @@ import uz.sesh.flex.domain.repository.AuthRepository
 class AuthRepositoryImpl(var context: Context) : AuthRepository {
     private var preferenceManager: PreferenceManager = PreferenceManager(context = context)
     override fun getUserToken(): String {
-
         return preferenceManager.getToken()
     }
 
@@ -27,7 +26,7 @@ class AuthRepositoryImpl(var context: Context) : AuthRepository {
     override fun confirmPhoneBySms(phoneNumber: String, code: String): Single<AuthSmsConfirmation> {
         return FlexApi.create(context).verifySms(SmsConfirmationRequest(phone = phoneNumber, code = code)).map {
             preferenceManager.saveToken(it.token)
-            return@map AuthSmsConfirmation(it.token)
+            return@map AuthSmsConfirmation(it.token,it.newUser)
         }
     }
 }

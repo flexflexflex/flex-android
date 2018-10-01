@@ -20,6 +20,7 @@ class FlexMapper {
             val friendsCount = flexResponse.friends_count
             val membersCount = flexResponse.members_count
             val flexOwner = flexResponse.owner
+            val image = flexResponse.image
             val owner: User = User(
                     flexOwner.firstName,
                     flexOwner.lastName,
@@ -30,6 +31,7 @@ class FlexMapper {
             return Flex(
                     title,
                     description,
+                    image,
                     friendsCount,
                     membersCount,
                     owner

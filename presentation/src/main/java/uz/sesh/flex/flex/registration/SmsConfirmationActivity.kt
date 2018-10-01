@@ -2,7 +2,6 @@ package uz.sesh.flex.flex.registration
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.MenuItem
@@ -64,7 +63,11 @@ class SmsConfirmationActivity : BaseActivity() {
                 ?.subscribeOn(Schedulers.io())
                 ?.subscribe(
                         { result ->
-                            openActivity(MainActivity::class.java)
+                            if (result.newUser) {
+                                openActivityClear(ProfileFillActivity::class.java)
+                            }else{
+                                openActivityClear(MainActivity::class.java)
+                            }
                         },
                         { error ->
                             error.printStackTrace()
@@ -72,13 +75,5 @@ class SmsConfirmationActivity : BaseActivity() {
 
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
-            android.R.id.home -> {
-                onBackPressed()
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
 
 }

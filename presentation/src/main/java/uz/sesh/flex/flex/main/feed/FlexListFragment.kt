@@ -73,7 +73,7 @@ class FlexListFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
                     StaggeredGridLayoutManager(columnCount,LinearLayoutManager.VERTICAL)
                 }
             }
-            adapter = MyFlexFeedItemRecyclerViewAdapter(listener)
+            adapter = MyFlexFeedItemRecyclerViewAdapter(listener,context)
         }
 
 

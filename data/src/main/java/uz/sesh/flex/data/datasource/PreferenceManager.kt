@@ -1,6 +1,7 @@
 package uz.sesh.flex.data.datasource
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 
 class PreferenceManager(var context: Context) {
@@ -17,4 +18,8 @@ class PreferenceManager(var context: Context) {
     public fun getToken(): String {
         return sharedPreferences.getString("token", "")
     }
+    public fun clearToken(){
+        sharedPreferences.edit().putString("token", "").apply()
+    }
+    public fun isLogined() = !sharedPreferences.getString("token", "").equals("")
 }

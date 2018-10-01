@@ -15,6 +15,15 @@ class UserMapper() : Mapper {
                     userResponse.phone
             )
         }
+        fun map(user: User): UserResponse {
+            return UserResponse(
+                    user.firstName,
+                    user.lastName,
+                    user.username,
+                    user.bio,
+                    user.phone
+            )
+        }
     }
 
 }
