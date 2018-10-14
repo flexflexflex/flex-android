@@ -14,6 +14,10 @@ import uz.sesh.flex.domain.model.Flex
 import uz.sesh.flex.flex.R
 import uz.sesh.flex.flex.splash.SplashActivity
 import uz.sesh.flex.flex.main.feed.FlexListFragment
+import uz.sesh.flex.flex.main.profile.ProfileFragment
+import android.R.attr.tag
+
+
 
 class MainActivity : AppCompatActivity(), FlexListFragment.OnListFragmentInteractionListener {
     override fun onListFragmentInteraction(item: Flex?) {
@@ -23,15 +27,15 @@ class MainActivity : AppCompatActivity(), FlexListFragment.OnListFragmentInterac
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_home -> {
-                loadFragment(FlexListFragment.newInstance(2))
+                changeFragment(FlexListFragment.newInstance(2), "home")
                 return@OnNavigationItemSelectedListener true
             }
-            R.id.navigation_dashboard -> {
-                loadFragment(FlexListFragment.newInstance(2))
+            R.id.navigation_feed -> {
+                changeFragment(FlexListFragment.newInstance(2), "feed")
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_profile -> {
-                loadFragment(FlexListFragment.newInstance(2))
+                changeFragment(ProfileFragment.newInstance(), "profile")
                 return@OnNavigationItemSelectedListener true
             }
         }
@@ -42,7 +46,7 @@ class MainActivity : AppCompatActivity(), FlexListFragment.OnListFragmentInterac
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
-        loadFragment(FlexListFragment.newInstance(2))
+        changeFragment(FlexListFragment.newInstance(2), "feed")
         InvalidAuthLiveData.getAuthErrorObservable()?.observe(this, Observer {
             it?.let {
                 if (it == InvalidAuthLiveData.EVENT.logout) {
@@ -52,27 +56,60 @@ class MainActivity : AppCompatActivity(), FlexListFragment.OnListFragmentInterac
             }
         })
     }
-    public fun logout(){
+
+    public fun logout() {
         PreferenceManager(this).clearToken()
-        var intent  = Intent(this, SplashActivity::class.java)
+        var intent = Intent(this, SplashActivity::class.java)
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         startActivity(intent)
         finish()
     }
-    private fun loadFragment(fragment: Fragment?): Boolean {
+
+    private fun loadFragment(fragment: Fragment?, tag: String): Boolean {
         //switching fragment
-        if (fragment != null) {
+
+        if (supportFragmentManager.findFragmentByTag(tag) != null) {
+            var findedFragment = supportFragmentManager.findFragmentByTag(tag)
+
+            if (findedFragment?.isAdded!!){
+                return false
+            }
             supportFragmentManager
                     .beginTransaction()
-                    .replace(R.id.main_container, fragment)
+                    .replace(R.id.main_container, findedFragment!!, tag)
                     .commit()
-            return true
+        } else {
+            if (fragment != null)
+                supportFragmentManager
+                        .beginTransaction()
+                        .replace(R.id.main_container, fragment, tag)
+                        .commit()
         }
-        return false
+        return true
     }
 
+    private fun changeFragment(myFragment: Fragment?,tag: String){
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+
+        val curFrag = supportFragmentManager.getPrimaryNavigationFragment()
+        if (curFrag != null) {
+            fragmentTransaction.detach(curFrag)
+        }
+
+        var fragment = supportFragmentManager.findFragmentByTag(tag)
+        if (fragment == null) {
+            fragment = myFragment
+            fragmentTransaction.add(container.id, fragment!!, tag)
+        } else {
+            fragmentTransaction.attach(fragment)
+        }
+
+        fragmentTransaction.setPrimaryNavigationFragment(fragment)
+        fragmentTransaction.setReorderingAllowed(true)
+        fragmentTransaction.commitNowAllowingStateLoss()
+    }
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when(item?.itemId){
+        when (item?.itemId) {
             android.R.id.home -> {
                 super.onBackPressed()
             }

@@ -1,6 +1,8 @@
 package uz.sesh.flex.flex.main.feed
 
+import android.arch.lifecycle.Observer
 import android.content.Context
+import android.databinding.Observable
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.widget.SwipeRefreshLayout
@@ -11,6 +13,7 @@ import android.support.v7.widget.StaggeredGridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_flex_feed_item_list.*
@@ -25,7 +28,7 @@ import uz.sesh.flex.flex.R
  */
 class FlexListFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     override fun onRefresh() {
-        (list.adapter as MyFlexFeedItemRecyclerViewAdapter).clearAll()
+
         getFeed(0)
     }
 
@@ -34,27 +37,26 @@ class FlexListFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
     private var listener: OnListFragmentInteractionListener? = null
 
+    private var flexListViewModel: FlexListViewModel? = null
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (flexListViewModel == null) {
+            flexListViewModel = FlexListViewModel.Factory(FlexRepositoryProvider().provideFlexRepository(context!!)).create(FlexListViewModel::class.java)
+            //flexListViewModel?.loadingStatus?.addOnPropertyChangedCallback(object :Observable.OnPropertyChangedCallback)
+        }
         arguments?.let {
             columnCount = it.getInt(ARG_COLUMN_COUNT)
         }
+
     }
 
     private fun getFeed(offser: Int) {
-        FlexRepositoryProvider().provideFlexRepository(context!!)
-                .getFeed(0)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .doOnSubscribe {
-                }
-                .doFinally {
-                    swipeRefreshlayout.isRefreshing = false
-                }
-                .subscribe({
-                    (list.adapter as MyFlexFeedItemRecyclerViewAdapter).addAll(it)
-                }, {
-
+        flexListViewModel?.getList(0)
+                ?.observe(this, Observer {
+                    if (list != null && it != null)
+                        (list.adapter as MyFlexFeedItemRecyclerViewAdapter).updateEmployeeListItems(it)
                 })
     }
 
@@ -70,10 +72,10 @@ class FlexListFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
                 columnCount <= 1 -> LinearLayoutManager(context)
                 else -> {
                     setHasFixedSize(false)
-                    StaggeredGridLayoutManager(columnCount,LinearLayoutManager.VERTICAL)
+                    StaggeredGridLayoutManager(columnCount, LinearLayoutManager.VERTICAL)
                 }
             }
-            adapter = MyFlexFeedItemRecyclerViewAdapter(listener,context)
+            adapter = MyFlexFeedItemRecyclerViewAdapter(listener, context)
         }
 
 
@@ -84,6 +86,7 @@ class FlexListFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         super.onViewCreated(view, savedInstanceState)
         getFeed(0)
     }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is OnListFragmentInteractionListener) {

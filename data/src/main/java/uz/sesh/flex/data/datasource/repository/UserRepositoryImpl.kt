@@ -9,13 +9,15 @@ import uz.sesh.flex.domain.repository.UserRepository
 
 class UserRepositoryImpl(var context: Context):UserRepository{
     override fun partialUpdateUser(user: User): Single<User> {
-        return FlexApi.create(context).partialUpdateUser(UserMapper.map(user))
-                .map { UserMapper.map(userResponse = it) }
+        return FlexApi.create(context).partialUpdateUser(UserMapper().reverseMap(user)!!)
+                .map {
+                    UserMapper().map(it)
+                }
     }
 
     override fun getUser(): Single<User> {
         return FlexApi.create(context).getUser().map {
-            return@map UserMapper.map(userResponse = it)
+            return@map UserMapper().map(it)
         }
     }
 

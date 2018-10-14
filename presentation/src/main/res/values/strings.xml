@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Flex</string>
     <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
+    <string name="title_feed">Feed</string>
     <string name="title_profile">Profile</string>
     <string name="title_activity_registration">Registration</string>
     <string name="title_activity_sms_confirmation">Confirmation</string>
@@ -98,4 +98,7 @@
         "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

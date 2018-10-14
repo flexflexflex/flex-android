@@ -30,6 +30,10 @@ interface FlexApi {
     @POST("/api/v1/auth/token/")
     fun verifySms(@Body request: SmsConfirmationRequest): Single<SmsConfirmationResponse>
 
+    //checks username is free
+    @GET("/api/v1/auth/check/{username}/")
+    fun checkIsValidUsername(@Path("username") username: String = ""): Single<CheckUsernameResponse>
+
     //Feed
     @GET("/api/v1/flex/")
     fun getFeed(@Query("page") page: Int): Single<FeedResponse>
@@ -38,12 +42,9 @@ interface FlexApi {
     @GET("/api/v1/user/")
     fun getUser(): Single<UserResponse>
 
-    //checks username is free
-    @GET("/api/v1/auth/check/{username}/")
-    fun checkIsValidUsername(@Path("username") username: String=""): Single<CheckUsernameResponse>
-
     @PATCH("/api/v1/user/")
     fun partialUpdateUser(@Body user: UserResponse): Single<UserResponse>
+
 
     companion object Factory {
         private lateinit var api: FlexApi
@@ -67,7 +68,7 @@ interface FlexApi {
                     .addConverterFactory(GsonConverterFactory.create())
                     .client(client)
                     //.client(okHttpClientBuilder.build())
-                    .baseUrl("http://18.224.29.19")
+                    .baseUrl("http://18.224.29.19/")
                     .build()
             return retrofit
         }

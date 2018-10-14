@@ -1,29 +1,31 @@
 package uz.sesh.flex.data.datasource.mapper
 
-import uz.sesh.flex.data.datasource.Mapper
 import uz.sesh.flex.data.datasource.models.user.UserResponse
 import uz.sesh.flex.domain.model.User
 
-class UserMapper() : Mapper {
+class UserMapper() : Mapper<UserResponse?, User?>() {
     companion object {
-        fun map(userResponse: UserResponse): User {
-            return User(
-                    userResponse.firstName,
-                    userResponse.lastName,
-                    userResponse.username,
-                    userResponse.bio,
-                    userResponse.phone
-            )
-        }
-        fun map(user: User): UserResponse {
-            return UserResponse(
-                    user.firstName,
-                    user.lastName,
-                    user.username,
-                    user.bio,
-                    user.phone
-            )
-        }
+        var instance = UserMapper()
+    }
+
+    override fun map(value: UserResponse?): User? {
+        return User(
+                value?.firstName,
+                value?.lastName,
+                value?.username,
+                value?.bio,
+                value?.phone
+        )
+    }
+
+    override fun reverseMap(value: User?): UserResponse? {
+        return UserResponse(
+                value?.firstName,
+                value?.lastName,
+                value?.username,
+                value?.bio,
+                value?.phone
+        )
     }
 
 }

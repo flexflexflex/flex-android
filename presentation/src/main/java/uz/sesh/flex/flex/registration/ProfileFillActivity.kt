@@ -45,8 +45,8 @@ class ProfileFillActivity : BaseActivity(), BaseView {
         usernameTextInputLayout.editText?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 var username = s.toString()
-                //if (username.length>3)
-                chechUserIsFree(username)
+                if (username.length != 0)
+                    chechUserIsFree(username)
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {

@@ -16,11 +16,11 @@ import uz.sesh.flex.flex.main.feed.FlexListFragment.OnListFragmentInteractionLis
 
 import kotlinx.android.synthetic.main.fragment_flex_feed_item.view.*
 import uz.sesh.flex.domain.model.Flex
-import android.support.v7.widget.StaggeredGridLayoutManager
 import android.widget.ImageView
 import com.bumptech.glide.Glide
-import uz.sesh.flex.flex.main.FlexDetailActivity
-import java.util.*
+import uz.sesh.flex.flex.main.flex.FlexDetailActivity
+import android.support.v7.util.DiffUtil
+import kotlin.collections.ArrayList
 
 
 /**
@@ -35,6 +35,7 @@ class MyFlexFeedItemRecyclerViewAdapter(
     private val mOnClickListener: View.OnClickListener
     private val mFlexes: ArrayList<Flex> = ArrayList()
 
+
     init {
         mOnClickListener = View.OnClickListener { v ->
             val item = v.tag as Flex
@@ -44,6 +45,14 @@ class MyFlexFeedItemRecyclerViewAdapter(
         }
     }
 
+    fun updateEmployeeListItems(flexes: ArrayList<Flex>) {
+        val diffCallback = FlexesDiffCallback(this.mFlexes, flexes)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+
+        this.mFlexes.clear()
+        this.mFlexes.addAll(flexes)
+        diffResult.dispatchUpdatesTo(this)
+    }
     fun addAll(flexes: ArrayList<Flex>) {
         if (itemCount == 0) {
             mFlexes.addAll(flexes)
@@ -58,6 +67,7 @@ class MyFlexFeedItemRecyclerViewAdapter(
     fun clearAll() {
         if (itemCount != 0) {
             mFlexes.clear()
+            notifyDataSetChanged()
         }
     }
 
@@ -68,12 +78,6 @@ class MyFlexFeedItemRecyclerViewAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-
-        var imageUrl: String = if (position % 2 == 0) {
-            "https://pp.userapi.com/c846121/v846121556/7694e/EOTTrGlJTks.jpg"
-        } else {
-            "https://pp.userapi.com/c845218/v845218610/59fe7/nRrwz1HfEIw.jpg"
-        }
         val item = mFlexes[position]
         holder.mIdView.text = item.title
         holder.mContentView.text =

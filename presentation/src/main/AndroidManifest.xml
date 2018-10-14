@@ -41,7 +41,7 @@
             android:windowSoftInputMode="adjustResize"
             />
         <activity
-            android:name=".main.FlexDetailActivity"
+            android:name=".main.flex.FlexDetailActivity"
             android:label="@string/title_activity_flex_detail"
             android:theme="@style/AppTheme.NoActionBar">
 
